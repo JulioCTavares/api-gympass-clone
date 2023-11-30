@@ -3,7 +3,7 @@ import { RegisterUseCase } from './register.usecase';
 import { faker } from '@faker-js/faker';
 import { compare } from 'bcrypt';
 import { InMemoryUsersRepository } from '@/repositories';
-import { UserAlreadyExistsError } from '@/middlewares';
+import { UserAlreadyExistsError } from '@/middlewares/errors';
 
 describe('Register Use Case', () => {
 	const generateFakeUserData = () => {

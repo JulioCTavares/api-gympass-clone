@@ -1,4 +1,4 @@
-import { UserAlreadyExistsError } from '@/middlewares';
+import { UserAlreadyExistsError } from '@/middlewares/errors';
 import { PrismaUsersRepository } from '@/repositories';
 import { RegisterUseCase } from '@/usecases';
 import { FastifyReply, FastifyRequest } from 'fastify';
