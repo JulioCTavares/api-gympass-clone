@@ -1,9 +1,12 @@
-import { describe, expect, it} from 'vitest';
+import { beforeEach, describe, expect, it} from 'vitest';
 import { RegisterUseCase } from './register.usecase';
 import { faker } from '@faker-js/faker';
 import { compare } from 'bcrypt';
 import { InMemoryUsersRepository } from '@/repositories';
 import { UserAlreadyExistsError } from '@/middlewares/errors';
+
+let usersRepository: InMemoryUsersRepository;
+let sut: RegisterUseCase;
 
 describe('Register Use Case', () => {
 	const generateFakeUserData = () => {
@@ -14,33 +17,29 @@ describe('Register Use Case', () => {
 		};
 	};
 
+	beforeEach(() => {
+		usersRepository = new InMemoryUsersRepository();
+		sut = new RegisterUseCase(usersRepository);
+	});
+
 	it('should be able to register a user', async () => {
-		const usersRepository = new InMemoryUsersRepository();
-		const registerUseCase = new RegisterUseCase(usersRepository);
-		
 		const userFakerDate = generateFakeUserData();
 
-		const {user} = await registerUseCase.execute(userFakerDate);
+		const {user} = await sut.execute(userFakerDate);
 
 
 		expect(user.id).toEqual(expect.any(String));
 	});
 	it('should hash user password upon registration', async () => {
-		const usersRepository = new InMemoryUsersRepository();
-		const registerUseCase = new RegisterUseCase(usersRepository);
-
 		const userFakerDate = generateFakeUserData();
 
-		const {user} = await registerUseCase.execute(userFakerDate);
+		const {user} = await sut.execute(userFakerDate);
 
 		const isPasswordCorrectlyHashed = await compare(userFakerDate.password, user.password,);
 
 		expect(isPasswordCorrectlyHashed).toBe(true);
 	});
 	it('should not be able to register with same email duplicate', async () => {
-		const usersRepository = new InMemoryUsersRepository();
-		const registerUseCase = new RegisterUseCase(usersRepository);
-
 		const email = faker.internet.email();
 
 		const userFakerData = {
@@ -49,9 +48,9 @@ describe('Register Use Case', () => {
 			password: faker.internet.password(),
 		};
 
-		await registerUseCase.execute(userFakerData);
+		await sut.execute(userFakerData);
 
-		await expect(() => registerUseCase.execute(userFakerData)).rejects.toBeInstanceOf(UserAlreadyExistsError);
+		await expect(() => sut.execute(userFakerData)).rejects.toBeInstanceOf(UserAlreadyExistsError);
 
 
 	});

@@ -1,9 +1,12 @@
-import { describe, expect, it } from 'vitest';
+import { beforeEach, describe, expect, it } from 'vitest';
 import { faker } from '@faker-js/faker';
 import { hash } from 'bcrypt';
 import { InMemoryUsersRepository } from '@/repositories';
 import { AuthenticateUseCase } from './authenticate.usecase';
 import { InvalidCredentialsError } from '@/middlewares/errors';
+
+let usersRepository: InMemoryUsersRepository;
+let sut: AuthenticateUseCase;
 
 describe('Register Use Case', () => {
 	const generateFakeUserData = () => {
@@ -13,11 +16,12 @@ describe('Register Use Case', () => {
 			password: faker.internet.password(),
 		};
 	};
+	beforeEach(() => {
+		usersRepository = new InMemoryUsersRepository();
+		sut = new AuthenticateUseCase(usersRepository);
+	});
 
 	it('should be able to authenticate a user', async () => {
-		const usersRepository = new InMemoryUsersRepository();
-		const sut = new AuthenticateUseCase(usersRepository);
-
 		const userFakerData = generateFakeUserData();
 
 		await usersRepository.create({
@@ -32,9 +36,6 @@ describe('Register Use Case', () => {
 	});
 
 	it('should not be able authenticate with wrong email', async () => {
-		const usersRepository = new InMemoryUsersRepository();
-		const sut = new AuthenticateUseCase(usersRepository);
-
 		const email = faker.internet.email();
 
 		const userFakerData = {
@@ -48,9 +49,6 @@ describe('Register Use Case', () => {
 	});
 
 	it('should not be able authenticate with wrong password', async () => {
-		const usersRepository = new InMemoryUsersRepository();
-		const sut = new AuthenticateUseCase(usersRepository);
-
 		const userFakerData = generateFakeUserData();
 
 		await usersRepository.create({
