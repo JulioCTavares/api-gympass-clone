@@ -8,7 +8,7 @@ import { InvalidCredentialsError } from '@/middlewares/errors';
 let usersRepository: InMemoryUsersRepository;
 let sut: AuthenticateUseCase;
 
-describe('Register Use Case', () => {
+describe('Authenticate Use Case', () => {
 	const generateFakeUserData = () => {
 		return {
 			name: faker.person.fullName(),
